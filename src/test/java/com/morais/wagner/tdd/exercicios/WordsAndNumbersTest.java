@@ -1,4 +1,4 @@
-package com.morais.wagner.tdd;
+package com.morais.wagner.tdd.exercicios;
 
 import com.morais.wagner.tdd.exercicios.WordsAndNumbers;
 import org.junit.Test;

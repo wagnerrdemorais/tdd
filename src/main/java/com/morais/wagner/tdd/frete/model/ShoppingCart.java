@@ -1,46 +1,113 @@
 package com.morais.wagner.tdd.frete.model;
 
-import com.morais.wagner.tdd.frete.exceptions.ProductAlreadyAddedException;
-
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class ShoppingCart {
-    private User user;
-    private List<Product> products;
+    private final User user;
+    private final Map<UUID, CartProduct> productMap = new HashMap<>();
 
-    public ShoppingCart(User user, List<Product> products) {
+    public ShoppingCart(User user, List<CartProduct> products) {
         this.user = user;
-        this.products = products;
+        addProducts(products);
     }
 
-    public List<Product> getProducts() {
-        return products;
+    private void changeProduct(Product product, BigDecimal newQtd) {
+        if (product == null)
+            return;
+
+        UUID id = product.getId();
+        CartProduct cartProduct = productMap.get(id);
+
+        if (newQtd.compareTo(BigDecimal.ZERO) > 0) {
+            if (cartProduct == null) {
+                cartProduct = new CartProduct(product, newQtd);
+            }
+            cartProduct.setQuantity(newQtd);
+            this.productMap.put(id, cartProduct);
+        } else if (newQtd.compareTo(BigDecimal.ZERO) <= 0) {
+            this.productMap.remove(id);
+        }
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void addProduct(Product product, BigDecimal qtd) {
+        changeProduct(product, qtd);
+    }
+
+    public void addProducts(List<CartProduct> products) {
+        if (products == null || products.isEmpty())
+            return;
+
+        for (CartProduct p : products) {
+            addProduct(p.getProduct(), p.getQuantity());
+        }
+    }
+
+    public void removeProduct(Product product) {
+        if (product == null)
+            return;
+
+        productMap.remove(product.getId());
+    }
+
+    private void removeProducts(List<CartProduct> products) {
+        if (products == null || products.isEmpty()) {
+            return;
+        }
+
+        for (CartProduct p : products) {
+            removeProduct(p.getProduct());
+        }
+    }
+
+    public List<CartProduct> getProducts() {
+        if (!haveProducts())
+            return null;
+
+        Collection<CartProduct> products = productMap.values();
+        return new ArrayList<CartProduct>(products);
+    }
+
+    public BigDecimal getTotalValue() {
+        BigDecimal sum = BigDecimal.ZERO;
+        if (!haveProducts())
+            return sum;
+
+        for (CartProduct p : getProducts()) {
+            BigDecimal price = p.getProduct().getPrice();
+            sum = p.getQuantity().multiply(price).add(sum);
+        }
+
+        return sum;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public int getItemCount() {
+        int qtd = 0;
+        if (!haveProducts())
+            return qtd;
 
-    private void addProduct(Product product) throws ProductAlreadyAddedException {
-        if (this.getProducts().contains(product)) {
-            throw new ProductAlreadyAddedException();
-        } else {
-            this.getProducts().add(product);
+        List<CartProduct> products = getProducts();
+
+        for (CartProduct p : products) {
+            qtd += p.getQuantity().intValue();
         }
+
+        return qtd;
     }
 
-    public void addProducts(List<Product> products) throws ProductAlreadyAddedException {
-        for (Product p : products) {
-            this.addProduct(p);
-        }
+    public int getProductCount() {
+        return productMap != null ? productMap.size() : 0;
     }
 
+    private boolean haveProducts() {
+        return this.productMap != null && !this.productMap.isEmpty();
+    }
+
+    public void changeProductQuantity(Product p, BigDecimal qtd) {
+        changeProduct(p, qtd);
+    }
 }

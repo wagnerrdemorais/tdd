@@ -1,17 +1,18 @@
 package com.morais.wagner.tdd.frete.model;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class Product {
 
+    private UUID id;
     private String description;
     private BigDecimal price;
-    private BigDecimal quantity;
 
-    public Product(String description, BigDecimal price, BigDecimal quantity) {
+    public Product(String description, BigDecimal price) {
+        this.id = UUID.randomUUID();
         this.description = description;
         this.price = price;
-        this.quantity = quantity;
     }
 
     public String getDescription() {
@@ -22,11 +23,9 @@ public class Product {
         return price;
     }
 
-    public BigDecimal getQuantity() {
-        return quantity;
+    public UUID getId() {
+        return this.id;
     }
 
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
+
 }
