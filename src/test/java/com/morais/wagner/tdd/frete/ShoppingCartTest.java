@@ -17,67 +17,67 @@ public class ShoppingCartTest {
     @Test
     public void ifCartValueIsEmptyValueShouldBeZero() {
         List<CartProduct> pList = new ArrayList<>();
-        User mockUser = TestUtils.buildMockUser();
+        User mockUser = buildMockUser();
         ShoppingCart sc = new ShoppingCart(mockUser, pList);
         assertEquals(0, sc.getTotalValue().compareTo(BigDecimal.ZERO));
     }
 
     @Test
     public void whenMoreProductsAreAddedCartShouldHaveCorrectItemCount() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(0);
+        ShoppingCart sc = buildMockShoppingCart(0);
         assertEquals(0, sc.getTotalValue().compareTo(BigDecimal.ZERO));
     }
 
     @Test
     public void whenAddAlreadyAddedProductCartShouldReturnCorrectQuantity() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(1);
+        ShoppingCart sc = buildMockShoppingCart(1);
         assertEquals(1, sc.getProductCount());
         assertEquals(10, sc.getItemCount());
 
-        TestUtils.changeAddedProductsQuantity(5, sc);
+        changeAddedProductsQuantity(5, sc);
         assertEquals(1, sc.getProductCount());
         assertEquals(5, sc.getItemCount());
     }
 
     @Test
     public void whenAddAlreadyAddedProductCartShouldReturnCorrectValue() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(1);
+        ShoppingCart sc = buildMockShoppingCart(1);
         assertEquals(new BigDecimal(10), sc.getTotalValue());
 
-        TestUtils.changeAddedProductsQuantity(5, sc);
+        changeAddedProductsQuantity(5, sc);
         assertEquals(new BigDecimal(5), sc.getTotalValue());
     }
 
     @Test
     public void whenProductIsRemovedCartShouldReturnCorrectQuantity() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(5);
+        ShoppingCart sc = buildMockShoppingCart(5);
         assertEquals(5, sc.getProductCount());
         assertEquals(50, sc.getItemCount());
 
-        TestUtils.changeAddedProductsQuantity(0, sc);
+        changeAddedProductsQuantity(0, sc);
         assertEquals(0, sc.getProductCount());
         assertEquals(0, sc.getItemCount());
     }
 
     @Test
     public void whenProductIsRemovedCartShouldReturnCorrectValue() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(5);
+        ShoppingCart sc = buildMockShoppingCart(5);
         assertEquals(new BigDecimal(150), sc.getTotalValue());
 
         sc.removeProduct(sc.getProducts().get(0).getProduct());
-        assertEquals(new BigDecimal(110), sc.getTotalValue());
+        assertEquals(new BigDecimal(140), sc.getTotalValue());
     }
 
     @Test
     public void whenMultipleProductsAreAddedAtSameTimeCartShouldHaveCorrectQuantity() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(1);
+        ShoppingCart sc = buildMockShoppingCart(1);
         assertEquals(1, sc.getProductCount());
         assertEquals(10, sc.getItemCount());
 
         List<CartProduct> pList = new ArrayList<>();
-        pList.add(TestUtils.buildMockCartProduct(new BigDecimal(2), new BigDecimal(1)));
-        pList.add(TestUtils.buildMockCartProduct(new BigDecimal(3), new BigDecimal(1)));
-        pList.add(TestUtils.buildMockCartProduct(new BigDecimal(4), new BigDecimal(1)));
+        pList.add(buildMockCartProduct(new BigDecimal(2), new BigDecimal(1)));
+        pList.add(buildMockCartProduct(new BigDecimal(3), new BigDecimal(1)));
+        pList.add(buildMockCartProduct(new BigDecimal(4), new BigDecimal(1)));
 
         sc.addProducts(pList);
         assertEquals(4, sc.getProductCount());
@@ -86,13 +86,13 @@ public class ShoppingCartTest {
 
     @Test
     public void whenMultipleProductsAreAddedAtSameTimeCartShouldHaveCorrectValue() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(1);
+        ShoppingCart sc = buildMockShoppingCart(1);
         assertEquals(new BigDecimal(10), sc.getTotalValue());
 
         List<CartProduct> pList = new ArrayList<>();
-        pList.add(TestUtils.buildMockCartProduct(new BigDecimal(2), new BigDecimal(1)));
-        pList.add(TestUtils.buildMockCartProduct(new BigDecimal(3), new BigDecimal(1)));
-        pList.add(TestUtils.buildMockCartProduct(new BigDecimal(4), new BigDecimal(1)));
+        pList.add(buildMockCartProduct(new BigDecimal(2), new BigDecimal(1)));
+        pList.add(buildMockCartProduct(new BigDecimal(3), new BigDecimal(1)));
+        pList.add(buildMockCartProduct(new BigDecimal(4), new BigDecimal(1)));
 
         sc.addProducts(pList);
         assertEquals(new BigDecimal(19), sc.getTotalValue());
@@ -100,13 +100,42 @@ public class ShoppingCartTest {
 
     @Test
     public void whenItemQuantityIsSetToZeroItemShouldBeRemoved() {
-        ShoppingCart sc = TestUtils.buildMockShoppingCart(5);
+        ShoppingCart sc = buildMockShoppingCart(5);
         assertEquals(5, sc.getProductCount());
         assertEquals(50, sc.getItemCount());
 
         sc.changeProductQuantity(sc.getProducts().get(0).getProduct(), BigDecimal.ZERO);
 
         assertEquals(40, sc.getItemCount());
+    }
+
+
+    public User buildMockUser() {
+        return new User("usuario", "123456");
+    }
+
+    public CartProduct buildMockCartProduct(BigDecimal price, BigDecimal qtd) {
+        String name = "ProductNameIsPrice: " + price;
+        Product product = new Product(name, price);
+        return new CartProduct(product, qtd);
+    }
+
+    public List<CartProduct> buildMockCartProductList(int listSize) {
+        List<CartProduct> pList = new ArrayList<>();
+        for (int i = 0; i < listSize; i++) {
+            pList.add(buildMockCartProduct(new BigDecimal(i + 1), BigDecimal.TEN));
+        }
+        return pList;
+    }
+
+    public ShoppingCart buildMockShoppingCart(int qtdProducts) {
+        return new ShoppingCart(buildMockUser(), buildMockCartProductList(qtdProducts));
+    }
+
+    public void changeAddedProductsQuantity(int qtd, ShoppingCart sc) {
+        for (CartProduct p : sc.getProducts()) {
+            sc.addProduct(p.getProduct(), new BigDecimal(qtd));
+        }
     }
 
 }

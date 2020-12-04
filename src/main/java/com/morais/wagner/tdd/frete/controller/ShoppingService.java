@@ -12,9 +12,6 @@ public class ShoppingService {
     }
 
     public BigDecimal getValueWithShippingFee(ShoppingCart shoppingCart) {
-        if (shoppingCart == null)
-            return BigDecimal.ZERO;
-
         BigDecimal totalValue = shoppingCart.getTotalValue();
         if (totalValue.compareTo(new BigDecimal(100)) < 0) {
             return totalValue;

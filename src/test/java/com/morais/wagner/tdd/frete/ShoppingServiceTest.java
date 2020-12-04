@@ -32,7 +32,6 @@ public class ShoppingServiceTest {
 
     @Test
     public void whenPriceIsOneHundredOrMoreReturnPriceWithFee() {
-
         User user = mock(User.class);
         when(user.getPostalCode()).thenReturn("123456");
 

@@ -13,13 +13,9 @@ public class ShoppingCart {
     }
 
     private void changeProduct(Product product, BigDecimal newQtd) {
-        if (product == null)
-            return;
-
         UUID id = product.getId();
-        CartProduct cartProduct = productMap.get(id);
-
         if (newQtd.compareTo(BigDecimal.ZERO) > 0) {
+            CartProduct cartProduct = productMap.get(id);
             if (cartProduct == null) {
                 cartProduct = new CartProduct(product, newQtd);
             }
@@ -35,18 +31,12 @@ public class ShoppingCart {
     }
 
     public void addProducts(List<CartProduct> products) {
-        if (products == null || products.isEmpty())
-            return;
-
         for (CartProduct p : products) {
             addProduct(p.getProduct(), p.getQuantity());
         }
     }
 
     public void removeProduct(Product product) {
-        if (product == null)
-            return;
-
         productMap.remove(product.getId());
     }
 

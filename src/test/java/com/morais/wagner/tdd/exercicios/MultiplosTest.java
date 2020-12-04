@@ -47,7 +47,6 @@ public class MultiplosTest {
         int c = 7;
         int delta = 0;
 
-
         int res110 = multiplos.multiplosOuE(110, a, b, c);
         assertEquals(420, res110, delta);
 
